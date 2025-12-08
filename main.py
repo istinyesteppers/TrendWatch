@@ -5,35 +5,43 @@ from monitor import TrendMonitor
 
 def main():
     db = TrendDatabase("trends.db")
-    scraper = RedditTrendSource(subreddit="news")
-    monitor = TrendMonitor(scraper, db)
+    source = RedditTrendSource(subreddit="news")
+    monitor = TrendMonitor(source, db)
 
     while True:
-        print("\n--- TrendWatch Menu ---")
-        print("1. Fetch & store new Reddit trends")
-        print("2. Show latest trends")
-        print("3. Exit")
+        print("\n=== TrendWatch ===")
+        print("1) Fetch & store new Reddit trends")
+        print("2) Show latest saved trends")
+        print("3) Exit")
 
-        choice = input("> ")
+        choice = input("Choose option: ").strip()
 
         if choice == "1":
-            limit = input("How many posts? (default 10): ")
-            limit = int(limit) if limit.strip() else 10
+            limit_str = input("How many posts? (default 10): ").strip()
+            try:
+                limit = int(limit_str) if limit_str else 10
+            except ValueError:
+                limit = 10
 
-            monitor.fetch_and_store(limit)
-            print("Saved ✔")
+            print("Fetching...")
+            monitor.fetch_and_store(limit=limit)
+            print("Done. Saved to database.")
 
         elif choice == "2":
-            limit = input("Show how many? (default 10): ")
-            limit = int(limit) if limit.strip() else 10
+            limit_str = input("Show how many? (default 10): ").strip()
+            try:
+                limit = int(limit_str) if limit_str else 10
+            except ValueError:
+                limit = 10
 
-            monitor.show_latest(limit)
+            monitor.show_latest(limit=limit)
 
         elif choice == "3":
+            print("Bye.")
             break
 
         else:
-            print("Invalid")
+            print("Invalid choice.")
 
 
 if __name__ == "__main__":
