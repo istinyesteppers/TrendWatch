@@ -11,18 +11,24 @@ class RedditTrendSource(BaseTrendSource):
         self.url = f"https://www.reddit.com/r/{subreddit}/hot.json"
 
     def fetch_trends(self, limit: int = 10) -> List[TrendItem]:
-        headers = {"User-Agent": "TrendWatchScraper/1.0"}
-        response = requests.get(self.url, headers=headers, params={"limit": limit}, timeout=10)
+        headers = {"User-Agent": "TrendWatchStudentProject/1.0"}
+        response = requests.get(
+            self.url,
+            headers=headers,
+            params={"limit": limit},
+            timeout=10,
+        )
+        response.raise_for_status()
         data = response.json()
 
         trends: List[TrendItem] = []
         now = datetime.utcnow()
 
-        for i, post in enumerate(data["data"]["children"], start=1):
-            post_data = post["data"]
-            title = post_data.get("title", "")
-            url = "https://reddit.com" + post_data.get("permalink", "")
-            score = post_data.get("ups", 0)
+        for i, child in enumerate(data["data"]["children"], start=1):
+            post = child["data"]
+            title = post.get("title", "")
+            url = "https://www.reddit.com" + post.get("permalink", "")
+            score = int(post.get("score", 0))
 
             trends.append(
                 TrendItem(
