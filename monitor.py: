@@ -1,0 +1,15 @@
+from typing import List
+from .base_source import BaseTrendSource
+from .db import TrendRepository
+
+class TrendMonitor:
+    def __init__(self, sources: List[BaseTrendSource], repo: TrendRepository):
+        self.sources = sources
+        self.repo = repo
+
+    def run_once(self, limit: int = 10):
+        all_trends = []
+        for src in self.sources:
+            trends = src.fetch_trends(limit=limit)
+            all_trends.extend(trends)
+        self.repo.save_trends(all_trends)
