@@ -69,14 +69,23 @@ class ScrapyHNSource(BaseTrendSource):
         now = datetime.now(timezone.utc)
         results: List[TrendItem] = []
 
+        if not items_out:
+            print("[WARN] Scrapy returned no items.")
+            return []
+
         for item in items_out:
+            title = item.get("title", "")
+            url = item.get("url", "")
+            score = int(item.get("score", 0))
+            rank = int(item.get("rank", 0))
+
             results.append(
                 TrendItem(
-                    platform="web",              # new platform type
-                    title=item["title"],
-                    url=item["url"],
-                    score=item["score"],
-                    rank=item["rank"],
+                    platform="web",
+                    title=title,
+                    url=url,
+                    score=score,
+                    rank=rank,
                     fetched_at=now,
                 )
             )

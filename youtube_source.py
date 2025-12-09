@@ -11,23 +11,30 @@ class YouTubeTrendSource(BaseTrendSource):
         self.region = region
 
     # OVERLOADED METHOD: adds optional region parameter
-    def fetch_trends(self, limit: int = 10, region: Optional[str] = None) -> List[TrendItem]:
-        region_to_use = region or self.region
-        now = datetime.now(timezone.utc)
-
+    def fetch_trends(self, limit: int = 10, region: str = "US") -> List[TrendItem]:
+        """Return dummy YouTube trends. Safe against bad inputs."""
         items: List[TrendItem] = []
 
-        # DUMMY TRENDS (replace with Selenium later if you want + advanced bonus)
+        # Defensive coding: avoid negative limits or None
+        if not isinstance(limit, int) or limit <= 0:
+            limit = 10
+
+        if not isinstance(region, str) or len(region) == 0:
+            region = "US"
+
+        now = datetime.now(timezone.utc)
+
         for i in range(1, limit + 1):
             items.append(
                 TrendItem(
                     platform="youtube",
-                    title=f"Sample YouTube trend #{i} ({region_to_use})",
-                    url=f"https://youtube.com/watch?v=fake{i}",
-                    score=1000 - i * 10,
+                    title=f"Trending YouTube Video #{i} ({region})",
+                    url=f"https://youtube.com/watch?v=video{i}",
+                    score=500 - i * 5,
                     rank=i,
                     fetched_at=now,
                 )
             )
 
         return items
+

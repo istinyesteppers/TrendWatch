@@ -29,34 +29,44 @@ class TrendDatabase:
         conn.close()
 
     def save_trends(self, trends: List[TrendItem]) -> None:
+        """Save a list of TrendItem into the SQLite database safely."""
         if not trends:
             return
 
-        conn = sqlite3.connect(self.path)
-        cur = conn.cursor()
+        conn = None
+        try:
+            conn = sqlite3.connect(self.path)
+            cur = conn.cursor()
 
-        rows = [
-            (
-                t.platform,
-                t.title,
-                t.url,
-                t.score,
-                t.rank,
-                t.fetched_at.isoformat(),
+            rows = [
+                (
+                    t.platform,
+                    t.title,
+                    t.url,
+                    t.score,
+                    t.rank,
+                    t.fetched_at.isoformat(),
+                )
+                for t in trends
+            ]
+
+            cur.executemany(
+                """
+                INSERT INTO trends (platform, title, url, score, rank, fetched_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                rows,
             )
-            for t in trends
-        ]
+            conn.commit()
+        except Exception as exc:
+            print(f"[ERROR] SQLite save failed: {exc}")
+        finally:
+            if conn is not None:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
 
-        cur.executemany(
-            """
-            INSERT INTO trends (platform, title, url, score, rank, fetched_at)
-            VALUES (?, ?, ?, ?, ?, ?)
-            """,
-            rows,
-        )
-
-        conn.commit()
-        conn.close()
 
     def get_latest(self, limit: int = 10) -> List[TrendItem]:
         conn = sqlite3.connect(self.path)

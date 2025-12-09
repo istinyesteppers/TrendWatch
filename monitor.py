@@ -10,8 +10,22 @@ class TrendMonitor:
         self.db = db
 
     def fetch_and_store(self, limit: int = 10) -> None:
-        trends: List[TrendItem] = self.source.fetch_trends(limit=limit)
-        self.db.save_trends(trends)
+        """Fetch trends from the source and store them in the DB safely."""
+        try:
+            trends: List[TrendItem] = self.source.fetch_trends(limit=limit)
+        except Exception as exc:  # last-resort safety
+            print(f"[ERROR] Source fetch failed: {exc}")
+            return
+
+        if not trends:
+            print("[INFO] No trends fetched. Nothing to save.")
+            return
+
+        try:
+            self.db.save_trends(trends)
+        except Exception as exc:
+            print(f"[ERROR] Failed to save trends to database: {exc}")
+
 
     def show_latest(self, limit: int = 10) -> None:
         trends = self.db.get_latest(limit=limit)

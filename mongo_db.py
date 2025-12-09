@@ -1,37 +1,48 @@
 from typing import List
 from datetime import datetime, timezone
+
 from pymongo import MongoClient
 from models import TrendItem
 
 
 class MongoTrendDB:
-    def __init__(self, uri="mongodb://localhost:27017", db_name="trendwatch"):
+    def __init__(self, uri: str = "mongodb://localhost:27017", db_name: str = "trendwatch"):
         self.client = MongoClient(uri)
         self.db = self.client[db_name]
         self.collection = self.db["trends"]
 
-    def save_trends(self, trends: List[TrendItem]):
+    def save_trends(self, trends: List[TrendItem]) -> None:
+        """Save a list of TrendItem objects into MongoDB safely."""
+        if not trends:
+            return
+
         docs = []
         for t in trends:
-            docs.append({
-                "platform": t.platform,
-                "title": t.title,
-                "url": t.url,
-                "score": t.score,
-                "rank": t.rank,
-                "fetched_at": t.fetched_at.isoformat()  # timezone-aware string
-            })
-        if docs:
-            self.collection.insert_many(docs)
+            docs.append(
+                {
+                    "platform": t.platform,
+                    "title": t.title,
+                    "url": t.url,
+                    "score": int(t.score),
+                    "rank": int(t.rank),
+                    "fetched_at": t.fetched_at.isoformat(),  # store as ISO string
+                }
+            )
 
-    def get_latest(self, limit: int = 10):
+        try:
+            self.collection.insert_many(docs)
+        except Exception as exc:
+            print(f"[ERROR] MongoDB insert failed: {exc}")
+
+    def get_latest(self, limit: int = 10) -> List[TrendItem]:
+        """Return latest trends as a list of TrendItem, robust to bad data."""
         cursor = self.collection.find().sort("_id", -1).limit(limit)
-        items = []
+        items: List[TrendItem] = []
 
         for doc in cursor:
             fetched_raw = doc.get("fetched_at")
 
-            # Safe conversion to datetime, guaranteed not to crash
+            # Try to parse ISO timestamp, fall back to "now" if broken/missing
             try:
                 fetched_at = (
                     datetime.fromisoformat(fetched_raw)
@@ -43,12 +54,12 @@ class MongoTrendDB:
 
             items.append(
                 TrendItem(
-                    platform=doc["platform"],
-                    title=doc["title"],
-                    url=doc["url"],
-                    score=doc["score"],
-                    rank=doc["rank"],
-                    fetched_at=fetched_at
+                    platform=doc.get("platform", ""),
+                    title=doc.get("title", ""),
+                    url=doc.get("url", ""),
+                    score=int(doc.get("score", 0)),
+                    rank=int(doc.get("rank", 0)),
+                    fetched_at=fetched_at,
                 )
             )
 

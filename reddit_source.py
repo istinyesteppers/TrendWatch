@@ -12,25 +12,42 @@ class RedditTrendSource(BaseTrendSource):
         self.base_url = f"https://www.reddit.com/r/{subreddit}/top.json"
 
     def fetch_trends(self, limit: int = 10) -> List[TrendItem]:
+        """Fetch top posts from the subreddit. Returns an empty list on failure."""
         headers = {"User-Agent": "TrendWatch/1.0"}
         params = {
             "limit": limit,
             "t": "day",
         }
 
-        response = requests.get(
-            self.base_url,
-            headers=headers,
-            params=params,
-            timeout=10,
-        )
-        data = response.json()
-
         items: List[TrendItem] = []
+
+        try:
+            response = requests.get(
+                self.base_url,
+                headers=headers,
+                params=params,
+                timeout=10,
+            )
+            response.raise_for_status()  # raises for 4xx / 5xx
+        except requests.RequestException as exc:
+            print(f"[ERROR] Failed to fetch from Reddit: {exc}")
+            return items  # empty list => caller knows nothing was fetched
+
+        try:
+            data = response.json()
+        except ValueError as exc:
+            print(f"[ERROR] Invalid JSON from Reddit: {exc}")
+            return items
+
+        children = data.get("data", {}).get("children", [])
+        if not children:
+            print("[WARN] Reddit returned no posts.")
+            return items
+
         now = datetime.now(timezone.utc)
 
-        for rank, child in enumerate(data["data"]["children"], start=1):
-            post = child["data"]
+        for rank, child in enumerate(children[:limit], start=1):
+            post = child.get("data", {})
 
             items.append(
                 TrendItem(
@@ -44,3 +61,4 @@ class RedditTrendSource(BaseTrendSource):
             )
 
         return items
+
