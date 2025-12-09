@@ -1,11 +1,19 @@
+USE_MONGO = True # set True or False later if you want to use MongoDB
+
 from reddit_source import RedditTrendSource
-from db import TrendDatabase
 from monitor import TrendMonitor
 
 
 def main():
-    db = TrendDatabase("trends.db")
-    source = RedditTrendSource(subreddit="news")
+    # choose DB backend
+    if USE_MONGO:
+        from mongo_db import MongoTrendDB
+        db = MongoTrendDB()
+    else:
+        from db import TrendDatabase
+        db = TrendDatabase("trends.db")
+
+    source = RedditTrendSource("news")
     monitor = TrendMonitor(source, db)
 
     while True:
