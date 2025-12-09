@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Literal
 
-Platform = Literal["reddit", "youtube"]
+Platform = Literal["reddit", "youtube", "web"]
 
 @dataclass
 class TrendItem:

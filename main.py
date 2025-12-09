@@ -34,13 +34,19 @@ def main():
     # ----------------------
     print("\nChoose source:")
     print("1) Reddit")
-    print("2) YouTube")
+    print("2) YouTube (dummy)")
+    print("3) Web (Hacker News via Scrapy)")
 
     src_choice = input("> ").strip()
 
     if src_choice == "2":
+        from youtube_source import YouTubeTrendSource
         source = YouTubeTrendSource(region="US")
+    elif src_choice == "3":
+        from scrapy_source import ScrapyHNSource
+        source = ScrapyHNSource()
     else:
+        from reddit_source import RedditTrendSource
         source = RedditTrendSource("news")
 
     monitor = TrendMonitor(source, db)
