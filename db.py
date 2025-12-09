@@ -5,6 +5,9 @@ from models import TrendItem
 
 
 class TrendDatabase:
+    class TrendDatabase:
+     """SQLite implementation of the trends storage backend."""
+
     def __init__(self, path: str = "trends.db"):
         self.path = path
         self._create_table_if_needed()

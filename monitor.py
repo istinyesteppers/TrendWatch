@@ -5,6 +5,7 @@ from db import TrendDatabase
 
 
 class TrendMonitor:
+    """Coordinates fetching trends from a source and saving them to a database."""
     def __init__(self, source: BaseTrendSource, db: TrendDatabase):
         self.source = source
         self.db = db

@@ -6,20 +6,27 @@ from models import TrendItem
 
 
 class YouTubeTrendSource(BaseTrendSource):
+    """Provides dummy YouTube trend data for OOP demonstration."""
+
     def __init__(self, region: str = "US"):
         # default YouTube region
         self.region = region
 
     # OVERLOADED METHOD: adds optional region parameter
-    def fetch_trends(self, limit: int = 10, region: str = "US") -> List[TrendItem]:
+    def fetch_trends(self, limit: int = 10, region: str | None = None) -> List[TrendItem]:
         """Return dummy YouTube trends. Safe against bad inputs."""
         items: List[TrendItem] = []
 
-        # Defensive coding: avoid negative limits or None
+        # fallback to default region if not provided
+        if region is None:
+            region = self.region
+
+        # Defensive: avoid non-int or negative limits
         if not isinstance(limit, int) or limit <= 0:
             limit = 10
 
-        if not isinstance(region, str) or len(region) == 0:
+        # Defensive: ensure region is a non-empty string
+        if not isinstance(region, str) or not region.strip():
             region = "US"
 
         now = datetime.now(timezone.utc)
@@ -37,4 +44,5 @@ class YouTubeTrendSource(BaseTrendSource):
             )
 
         return items
+
 

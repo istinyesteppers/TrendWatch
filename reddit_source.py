@@ -7,6 +7,8 @@ from models import TrendItem
 
 
 class RedditTrendSource(BaseTrendSource):
+    """Fetches top posts from a subreddit using the Reddit JSON API."""
+
     def __init__(self, subreddit: str = "news"):
         self.subreddit = subreddit
         self.base_url = f"https://www.reddit.com/r/{subreddit}/top.json"

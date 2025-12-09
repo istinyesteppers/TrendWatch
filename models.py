@@ -6,6 +6,7 @@ Platform = Literal["reddit", "youtube", "web"]
 
 @dataclass
 class TrendItem:
+    """Represents a single trending item from any platform."""
     platform: Platform
     title: str
     url: str

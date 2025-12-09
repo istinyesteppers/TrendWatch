@@ -6,6 +6,7 @@ from models import TrendItem
 
 
 class MongoTrendDB:
+    """MongoDB implementation of the trends storage backend."""
     def __init__(self, uri: str = "mongodb://localhost:27017", db_name: str = "trendwatch"):
         self.client = MongoClient(uri)
         self.db = self.client[db_name]

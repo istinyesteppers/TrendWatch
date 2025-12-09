@@ -47,11 +47,7 @@ class HNSpider(scrapy.Spider):
 
 
 class ScrapyHNSource(BaseTrendSource):
-    """
-    Trend source that uses the Scrapy library under the hood.
-    This is what gives you the +10 bonus in the scraping section.
-    """
-
+    """Scrapes Hacker News front page using Scrapy."""
     def fetch_trends(self, limit: int = 10) -> List[TrendItem]:
         items_out: List[dict] = []
 
