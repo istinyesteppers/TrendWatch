@@ -1,3 +1,4 @@
+"""SQLite implementation of the TrendWatch database backend."""
 import sqlite3
 from typing import List
 from datetime import datetime
@@ -5,14 +6,14 @@ from models import TrendItem
 
 
 class TrendDatabase:
-    class TrendDatabase:
-     """SQLite implementation of the trends storage backend."""
+    """Handles storing and retrieving trending data using SQLite."""
 
     def __init__(self, path: str = "trends.db"):
         self.path = path
         self._create_table_if_needed()
 
     def _create_table_if_needed(self) -> None:
+        """Create the trends table if it doesn't already exist."""
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
         cur.execute(
@@ -32,11 +33,10 @@ class TrendDatabase:
         conn.close()
 
     def save_trends(self, trends: List[TrendItem]) -> None:
-        """Save a list of TrendItem into the SQLite database safely."""
+        """Save a list of TrendItem objects into the database."""
         if not trends:
             return
 
-        conn = None
         try:
             conn = sqlite3.connect(self.path)
             cur = conn.cursor()
@@ -61,17 +61,18 @@ class TrendDatabase:
                 rows,
             )
             conn.commit()
-        except Exception as exc:
-            print(f"[ERROR] SQLite save failed: {exc}")
-        finally:
-            if conn is not None:
-                try:
-                    conn.close()
-                except Exception:
-                    pass
 
+        except Exception as exc:  # pylint: disable=broad-except
+            print(f"[ERROR] SQLite save failed: {exc}")
+
+        finally:
+            try:
+                conn.close()
+            except Exception:  # pylint: disable=broad-except
+                pass
 
     def get_latest(self, limit: int = 10) -> List[TrendItem]:
+        """Return the newest saved trends, ordered by most recent first."""
         conn = sqlite3.connect(self.path)
         cur = conn.cursor()
 
@@ -99,5 +100,4 @@ class TrendDatabase:
                     fetched_at=datetime.fromisoformat(fetched_at),
                 )
             )
-
         return items

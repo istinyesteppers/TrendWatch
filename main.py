@@ -1,6 +1,6 @@
+"""CLI entry point for the TrendWatch application."""
+
 from monitor import TrendMonitor
-from reddit_source import RedditTrendSource
-from youtube_source import YouTubeTrendSource
 from mongo_db import MongoTrendDB
 from db import TrendDatabase
 
@@ -9,11 +9,11 @@ def create_db(backend: str):
     """Factory to create the correct DB object."""
     if backend == "mongo":
         return MongoTrendDB()
-    else:
-        return TrendDatabase("trends.db")
+    return TrendDatabase("trends.db")
 
 
 def main():
+    """Run the TrendWatch interactive command-line interface."""
     # ----------------------
     # Choose initial DB backend
     # ----------------------
@@ -108,7 +108,10 @@ def main():
 
             db = create_db(current_backend)
             monitor = TrendMonitor(source, db)
-            print(f"Switched to { 'MongoDB' if current_backend == 'mongo' else 'SQLite' } backend.")
+            print(
+                f"Switched to "
+                f"{'MongoDB' if current_backend == 'mongo' else 'SQLite'} backend."
+            )
 
         else:
             print("Invalid choice.")

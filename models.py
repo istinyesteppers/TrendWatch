@@ -1,3 +1,4 @@
+"""Dataclasses for representing trend items in TrendWatch."""
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Literal

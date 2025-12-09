@@ -1,3 +1,5 @@
+"""Business logic for fetching and displaying trends."""
+
 from typing import List
 from models import TrendItem
 from base_source import BaseTrendSource
@@ -10,11 +12,11 @@ class TrendMonitor:
         self.source = source
         self.db = db
 
-    def fetch_and_store(self, limit: int = 10) -> None:
+    def fetch_and_store(self, limit: int = 10) -> None:  # pylint: disable=broad-except
         """Fetch trends from the source and store them in the DB safely."""
         try:
             trends: List[TrendItem] = self.source.fetch_trends(limit=limit)
-        except Exception as exc:  # last-resort safety
+        except Exception as exc:  # pylint: disable=broad-except
             print(f"[ERROR] Source fetch failed: {exc}")
             return
 
@@ -24,11 +26,12 @@ class TrendMonitor:
 
         try:
             self.db.save_trends(trends)
-        except Exception as exc:
+        except Exception as exc:   # pylint: disable=broad-except
             print(f"[ERROR] Failed to save trends to database: {exc}")
 
 
-    def show_latest(self, limit: int = 10) -> None:
+    def show_latest(self, limit: int = 10) -> None: # pylint: disable=broad-except
+        """Print the latest saved trends in a readable format."""
         trends = self.db.get_latest(limit=limit)
         if not trends:
             print("No data in database yet.")

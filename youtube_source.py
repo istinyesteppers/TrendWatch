@@ -1,5 +1,8 @@
+"""YouTube demo trend source used for polymorphism and testing."""
+
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import List
+
 
 from base_source import BaseTrendSource
 from models import TrendItem
@@ -44,5 +47,3 @@ class YouTubeTrendSource(BaseTrendSource):
             )
 
         return items
-
-

@@ -1,9 +1,12 @@
-import requests
+"""Reddit-based trend source implementation for TrendWatch."""
+
 from datetime import datetime, timezone
 from typing import List
 
-from base_source import BaseTrendSource
+import requests
+
 from models import TrendItem
+from base_source import BaseTrendSource
 
 
 class RedditTrendSource(BaseTrendSource):
@@ -63,4 +66,3 @@ class RedditTrendSource(BaseTrendSource):
             )
 
         return items
-

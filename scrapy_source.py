@@ -1,3 +1,5 @@
+"""Scrapy-based Hacker News trend source for TrendWatch."""
+
 from datetime import datetime, timezone
 from typing import List
 
@@ -26,6 +28,7 @@ class HNSpider(scrapy.Spider):
         self.items_out = items_out if items_out is not None else []
 
     def parse(self, response):
+        """Parse the Hacker News HTML rows and extract title, URL, and rank."""
         # Each story row has class "athing"
         rows = response.css("tr.athing")
 
@@ -49,6 +52,7 @@ class HNSpider(scrapy.Spider):
 class ScrapyHNSource(BaseTrendSource):
     """Scrapes Hacker News front page using Scrapy."""
     def fetch_trends(self, limit: int = 10) -> List[TrendItem]:
+        """Fetch top trends from Hacker News using Scrapy."""
         items_out: List[dict] = []
 
         process = CrawlerProcess(
