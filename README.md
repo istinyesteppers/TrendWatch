@@ -5,6 +5,7 @@ A Python project for scraping, storing, and inspecting trending data from multip
 
 This combines the **Web Monitoring (Project 2)** and **Database App (Project 3)** ideas into a single system.
 
+
 ---
 
 ## 🔍 Project Idea
@@ -24,6 +25,17 @@ It is designed to show:
 - Databases  
 - OOP and separation of concerns  
 - Basic robustness and testing
+
+---
+
+## ✨ Features
+
+- Multiple sources: Reddit, YouTube, Hacker News (Scrapy)
+- Two databases: SQLite + MongoDB (switchable at runtime)
+- Unified TrendItem dataclass model
+- Clean OOP architecture (abstraction, inheritance, composition)
+- Robust error handling and tests
+- Modular design for easy extension
 
 ---
 
