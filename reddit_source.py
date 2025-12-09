@@ -1,44 +1,46 @@
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List
-from models import TrendItem
+
 from base_source import BaseTrendSource
+from models import TrendItem
 
 
 class RedditTrendSource(BaseTrendSource):
     def __init__(self, subreddit: str = "news"):
         self.subreddit = subreddit
-        self.url = f"https://www.reddit.com/r/{subreddit}/hot.json"
+        self.base_url = f"https://www.reddit.com/r/{subreddit}/top.json"
 
     def fetch_trends(self, limit: int = 10) -> List[TrendItem]:
-        headers = {"User-Agent": "TrendWatchStudentProject/1.0"}
+        headers = {"User-Agent": "TrendWatch/1.0"}
+        params = {
+            "limit": limit,
+            "t": "day",
+        }
+
         response = requests.get(
-            self.url,
+            self.base_url,
             headers=headers,
-            params={"limit": limit},
+            params=params,
             timeout=10,
         )
-        response.raise_for_status()
         data = response.json()
 
-        trends: List[TrendItem] = []
-        now = datetime.utcnow()
+        items: List[TrendItem] = []
+        now = datetime.now(timezone.utc)
 
-        for i, child in enumerate(data["data"]["children"], start=1):
+        for rank, child in enumerate(data["data"]["children"], start=1):
             post = child["data"]
-            title = post.get("title", "")
-            url = "https://www.reddit.com" + post.get("permalink", "")
-            score = int(post.get("score", 0))
 
-            trends.append(
+            items.append(
                 TrendItem(
                     platform="reddit",
-                    title=title,
-                    url=url,
-                    score=score,
-                    rank=i,
+                    title=post.get("title", ""),
+                    url="https://www.reddit.com" + post.get("permalink", ""),
+                    score=int(post.get("score", 0)),
+                    rank=rank,
                     fetched_at=now,
                 )
             )
 
-        return trends
+        return items

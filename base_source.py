@@ -6,6 +6,5 @@ from models import TrendItem
 class BaseTrendSource(ABC):
     @abstractmethod
     def fetch_trends(self, limit: int = 10) -> List[TrendItem]:
-        """Fetch top 'limit' trending items."""
-        raise NotImplementedError
-  
+        """Return a list of TrendItem objects from this source."""
+        pass
