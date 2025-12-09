@@ -1,4 +1,3 @@
-````markdown
 # TrendWatch 🕵️‍♂️  
 Multi-Source Trend Monitoring Tool
 
@@ -273,5 +272,3 @@ Included tests:
 * Add more detailed integrations tests
 * Add ORM for additional OOP/database depth
 
-```
-```
